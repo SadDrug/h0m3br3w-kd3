@@ -7,7 +7,7 @@ use Getopt::Long;
 use strict;
 use warnings;
 
-my $frameworks_version   = "5.76";
+my $frameworks_version   = "5.77";
 my $applications_version = "20.12.0";
 my $plasma_version       = "5.20.4";
 
@@ -40,7 +40,6 @@ my %frameworks = (
     'kauth'           => '',
     'kcompletion'     => '',
     'kcrash'          => '',
-    'kdoctools'       => '',
     'kfilemetadata'   => '',
     'kimageformats'   => '',
     'kjobwidgets'     => '',
