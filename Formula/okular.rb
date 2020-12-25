@@ -43,7 +43,7 @@ class Okular < Formula
     system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
     system "cmake", "--build", "build"
     system "cmake", "--install", "build"
-    prefix.install build/"install_manifest.txt"
+    prefix.install "build/install_manifest.txt"
     # Extract Qt plugin and QML2 path
     mkdir "getqmlpath" do
       (Pathname.pwd/"main.cpp").write <<~EOS

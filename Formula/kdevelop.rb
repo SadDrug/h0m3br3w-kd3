@@ -49,7 +49,7 @@ class Kdevelop < Formula
     system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
     system "cmake", "--build", "build"
     system "cmake", "--install", "build"
-    prefix.install build/"install_manifest.txt"
+    prefix.install "build/install_manifest.txt"
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     chmod "+w", "#{bin}/kdevelop.app/Contents/Info.plist"
     system "/usr/libexec/PlistBuddy",

@@ -43,7 +43,7 @@ class Kf5Kapidox < Formula
     system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
     system "cmake", "--build", "build"
     system "cmake", "--install", "build"
-    prefix.install build/"install_manifest.txt"
+    prefix.install "build/install_manifest.txt"
 
     xy = Language::Python.major_minor_version "python3"
     ENV.prepend_create_path "PYTHONPATH", libexec/"vendor/lib/python#{xy}/site-packages"

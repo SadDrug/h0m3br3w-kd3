@@ -31,7 +31,7 @@ class Kf5PlasmaFramework < Formula
     system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
     system "cmake", "--build", "build"
     system "cmake", "--install", "build"
-    prefix.install build/"install_manifest.txt"
+    prefix.install "build/install_manifest.txt"
   end
 
   def caveats

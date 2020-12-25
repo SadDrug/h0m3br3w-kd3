@@ -29,7 +29,7 @@ class Kdiff3 < Formula
     system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
     system "cmake", "--build", "build"
     system "cmake", "--install", "build"
-    prefix.install build/"install_manifest.txt"
+    prefix.install "build/install_manifest.txt"
 
     bin.write_exec_script "#{prefix}/kdiff3.app/Contents/MacOS/kdiff3"
     # Create icns file from svg

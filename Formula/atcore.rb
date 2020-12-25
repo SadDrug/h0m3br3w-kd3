@@ -23,7 +23,7 @@ class Atcore < Formula
     system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
     system "cmake", "--build", "build"
     system "cmake", "--install", "build"
-    prefix.install build/"install_manifest.txt"
+    prefix.install "build/install_manifest.txt"
 
     # move the plugins to real path
     mv "#{bin}/plugins", "#{bin}/AtCoreTest.app/Contents/MacOS/plugins"
