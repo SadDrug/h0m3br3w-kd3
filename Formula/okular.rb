@@ -3,24 +3,25 @@ class Okular < Formula
   homepage "https://okular.kde.org"
   url "https://download.kde.org/stable/release-service/20.12.0/src/okular-20.12.0.tar.xz"
   sha256 "972c5395dad9c47b0251237b476d569bcd21855710a1bf8ec50fa7e6f0472bce"
+  revision 1
   head "https://invent.kde.org/graphics/okular.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
 
   depends_on "djvulibre"
   depends_on "freetype"
-  depends_on "KDE-mac/kde/kf5-breeze-icons"
-  depends_on "KDE-mac/kde/kf5-kactivities"
-  depends_on "KDE-mac/kde/kf5-khtml"
-  depends_on "KDE-mac/kde/kf5-kirigami2"
-  depends_on "KDE-mac/kde/kf5-kjs"
-  depends_on "KDE-mac/kde/kf5-kparts"
-  depends_on "KDE-mac/kde/kf5-kpty"
-  depends_on "KDE-mac/kde/libkexiv2"
-  depends_on "KDE-mac/kde/phonon"
+  depends_on "kde-mac/kde/kf5-breeze-icons"
+  depends_on "kde-mac/kde/kf5-kactivities"
+  depends_on "kde-mac/kde/kf5-khtml"
+  depends_on "kde-mac/kde/kf5-kirigami2"
+  depends_on "kde-mac/kde/kf5-kjs"
+  depends_on "kde-mac/kde/kf5-kparts"
+  depends_on "kde-mac/kde/kf5-kpty"
+  depends_on "kde-mac/kde/libkexiv2"
+  depends_on "kde-mac/kde/phonon"
   depends_on "kde-threadweaver"
   depends_on "libspectre"
   depends_on "poppler"
@@ -39,12 +40,10 @@ class Okular < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin and QML2 path
     mkdir "getqmlpath" do
       (Pathname.pwd/"main.cpp").write <<~EOS
@@ -92,8 +91,8 @@ class Okular < Formula
   end
 
   test do
-    assert `"#{bin}/okular.app/Contents/MacOS/okular" --help | grep -- --help`.include?("--help")
-    assert `"#{bin}/okularkirigami.app/Contents/MacOS/okularkirigami" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/okular.app/Contents/MacOS/okular --help")
+    assert_match "help", shell_output("#{bin}/okularkirigami.app/Contents/MacOS/okularkirigami --help")
   end
 end
 

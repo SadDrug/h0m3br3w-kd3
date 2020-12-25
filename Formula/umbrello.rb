@@ -3,20 +3,21 @@ class Umbrello < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/release-service/20.12.0/src/umbrello-20.12.0.tar.xz"
   sha256 "216bfa1bca11c28d41c3d2f8ba818b03090d138b00def56221d1901bff63b4b7"
+  revision 1
   head "https://invent.kde.org/sdk/umbrello.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kdevelop-pg-qt" => :build
-  depends_on "KDE-mac/kde/kf5-kdesignerplugin" => :build
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
+  depends_on "kde-mac/kde/kdevelop-pg-qt" => :build
+  depends_on "kde-mac/kde/kf5-kdesignerplugin" => :build
   depends_on "ninja" => :build
 
   depends_on "hicolor-icon-theme"
-  depends_on "KDE-mac/kde/kdevelop"
-  depends_on "KDE-mac/kde/kf5-breeze-icons"
-  depends_on "KDE-mac/kde/kf5-kdelibs4support"
-  depends_on "KDE-mac/kde/qt-webkit"
+  depends_on "kde-mac/kde/kdevelop"
+  depends_on "kde-mac/kde/kf5-breeze-icons"
+  depends_on "kde-mac/kde/kf5-kdelibs4support"
+  depends_on "kde-mac/kde/qt-webkit"
   depends_on "llvm"
 
   def install
@@ -30,12 +31,10 @@ class Umbrello < Formula
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DQt5WebKitWidgets_DIR=" + Formula["qt-webkit"].opt_prefix + "/lib/cmake/Qt5WebKitWidgets"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",
@@ -57,6 +56,6 @@ class Umbrello < Formula
   end
 
   test do
-    assert `"#{bin}/umbrello5.app/Contents/MacOS/umbrello5" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/umbrello5.app/Contents/MacOS/umbrello5 --help")
   end
 end

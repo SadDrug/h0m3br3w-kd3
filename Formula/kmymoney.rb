@@ -3,6 +3,7 @@ class Kmymoney < Formula
   homepage "https://kmymoney.org"
   url "https://download.kde.org/stable/kmymoney/5.1.0/src/kmymoney-5.1.0.tar.xz"
   sha256 "2db968f1d112b913fde3e0e5160215ca689ea2ca5ce3f6f00a4ef97330f71351"
+  revision 1
   head "https://invent.kde.org/office/kmymoney.git"
 
   depends_on "cmake" => [:build, :test]
@@ -15,15 +16,15 @@ class Kmymoney < Formula
 
   depends_on "boost"
   depends_on "gpgme"
-  depends_on "KDE-mac/kde/kdiagram"
-  depends_on "KDE-mac/kde/kf5-breeze-icons"
-  depends_on "KDE-mac/kde/kf5-kactivities"
-  depends_on "KDE-mac/kde/kf5-kcmutils"
-  depends_on "KDE-mac/kde/kf5-kdewebkit"
-  depends_on "KDE-mac/kde/kf5-kio"
-  depends_on "KDE-mac/kde/kf5-kitemmodels"
-  depends_on "KDE-mac/kde/kf5-kross"
-  depends_on "KDE-mac/kde/libalkimia"
+  depends_on "kde-mac/kde/kdiagram"
+  depends_on "kde-mac/kde/kf5-breeze-icons"
+  depends_on "kde-mac/kde/kf5-kactivities"
+  depends_on "kde-mac/kde/kf5-kcmutils"
+  depends_on "kde-mac/kde/kf5-kdewebkit"
+  depends_on "kde-mac/kde/kf5-kio"
+  depends_on "kde-mac/kde/kf5-kitemmodels"
+  depends_on "kde-mac/kde/kf5-kross"
+  depends_on "kde-mac/kde/libalkimia"
   depends_on "libical"
   depends_on "libofx"
   depends_on "sqlcipher"
@@ -37,12 +38,10 @@ class Kmymoney < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

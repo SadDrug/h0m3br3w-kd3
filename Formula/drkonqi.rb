@@ -3,6 +3,7 @@ class Drkonqi < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/plasma/5.20.4/drkonqi-5.20.4.tar.xz"
   sha256 "55d4a166ee74c4a935c69cec64ecd8eb3fdd79aae8dcd996f6432a873be3fac8"
+  revision 1
   head "https://invent.kde.org/plasma/drkonqi.git"
 
   depends_on "cmake" => [:build, :test]
@@ -11,8 +12,8 @@ class Drkonqi < Formula
   depends_on "kde-extra-cmake-modules" => [:build, :test]
   depends_on "ninja" => :build
 
-  depends_on "KDE-mac/kde/kf5-kidletime"
-  depends_on "KDE-mac/kde/kf5-kxmlrpcclient"
+  depends_on "kde-mac/kde/kf5-kidletime"
+  depends_on "kde-mac/kde/kf5-kxmlrpcclient"
 
   def install
     args = std_cmake_args
@@ -22,12 +23,10 @@ class Drkonqi < Formula
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_LIBEXECDIR=lib"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   test do

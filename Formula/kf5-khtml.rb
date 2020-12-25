@@ -12,9 +12,9 @@ class Kf5Khtml < Formula
 
   depends_on "giflib"
   depends_on "jpeg"
-  depends_on "KDE-mac/kde/kf5-kjs"
-  depends_on "KDE-mac/kde/kf5-kparts"
-  depends_on "KDE-mac/kde/phonon"
+  depends_on "kde-mac/kde/kf5-kjs"
+  depends_on "kde-mac/kde/kf5-kparts"
+  depends_on "kde-mac/kde/phonon"
   depends_on "libpng"
   depends_on "openssl"
   depends_on "zlib"
@@ -26,12 +26,10 @@ class Kf5Khtml < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   def caveats

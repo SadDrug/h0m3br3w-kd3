@@ -15,14 +15,13 @@ formuladir="$(brew --repo kde-mac/kde)/Formula"
 
 for formula in "${formuladir}"/*.rb; do
   formulaname=`basename "${formula}"`
-  for dep in `grep "depends_on \"KDE-mac/kde" "${formula}" | awk -F "\"" '{print $2}'`; do
-    echo "${dep/[k,K][d,D][e,E]-mac\/kde\//} ${formulaname//\.rb/}" >> "${dep_map}"
+  for dep in `grep "depends_on \"kde-mac/kde" "${formula}" | awk -F "\"" '{print $2}'`; do
+    echo "${dep/kde-mac\/kde\//} ${formulaname//\.rb/}" >> "${dep_map}"
   done
 done
 
 tsort "${dep_map}" > "${install_order}" 2> /dev/null
-
-echo 'tap "kde-mac/kde", "https://invent.kde.org/packaging/homebrew-kde.git"' > "${bundle}"
+touch "${bundle}"
 
 for candidate_formula in `cat "${install_order}"`; do
     formula_path="${formuladir}/${candidate_formula}.rb"

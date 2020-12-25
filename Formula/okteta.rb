@@ -3,19 +3,20 @@ class Okteta < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/okteta/0.26.4/src/okteta-0.26.4.tar.xz"
   sha256 "ef22b096c4d8a682b5467ee7d8e9e05ede44cde116daef804312745c4bfd0f03"
+  revision 1
   head "https://invent.kde.org/utilities/okteta.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
   depends_on "shared-mime-info" => :build
 
   depends_on "hicolor-icon-theme"
-  depends_on "KDE-mac/kde/kf5-breeze-icons"
-  depends_on "KDE-mac/kde/kf5-kcmutils"
-  depends_on "KDE-mac/kde/kf5-knewstuff"
-  depends_on "KDE-mac/kde/kf5-kparts"
+  depends_on "kde-mac/kde/kf5-breeze-icons"
+  depends_on "kde-mac/kde/kf5-kcmutils"
+  depends_on "kde-mac/kde/kf5-knewstuff"
+  depends_on "kde-mac/kde/kf5-kparts"
   depends_on "qca"
 
   def install
@@ -26,12 +27,10 @@ class Okteta < Formula
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

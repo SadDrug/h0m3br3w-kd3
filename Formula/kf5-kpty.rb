@@ -13,7 +13,7 @@ class Kf5Kpty < Formula
   depends_on "ninja" => :build
 
   depends_on "kde-ki18n"
-  depends_on "KDE-mac/kde/kf5-kcoreaddons"
+  depends_on "kde-mac/kde/kf5-kcoreaddons"
 
   def install
     args = std_cmake_args
@@ -23,12 +23,10 @@ class Kf5Kpty < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   test do

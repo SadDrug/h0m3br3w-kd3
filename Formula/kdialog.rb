@@ -3,19 +3,20 @@ class Kdialog < Formula
   homepage "https://kde.org/applications/utilities/org.kde.kdialog"
   url "https://download.kde.org/stable/release-service/20.12.0/src/kdialog-20.12.0.tar.xz"
   sha256 "2479ea4a4568314abbefff4d4edb84b2ac437f59805908044d001792efc46a1d"
+  revision 1
   head "https://invent.kde.org/utilities/kdialog.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "kde-extra-cmake-modules" => [:build, :test]
   depends_on "ninja" => :build
-  depends_on "KDE-mac/kde/kf5-kdbusaddons"
-  depends_on "KDE-mac/kde/kf5-kguiaddons"
-  depends_on "KDE-mac/kde/kf5-kiconthemes"
-  depends_on "KDE-mac/kde/kf5-kio"
-  depends_on "KDE-mac/kde/kf5-knotifications"
-  depends_on "KDE-mac/kde/kf5-ktextwidgets"
-  depends_on "KDE-mac/kde/kf5-kwindowsystem"
-  depends_on "KDE-mac/kde/kf5-kcoreaddons" => :optional
+  depends_on "kde-mac/kde/kf5-kdbusaddons"
+  depends_on "kde-mac/kde/kf5-kguiaddons"
+  depends_on "kde-mac/kde/kf5-kiconthemes"
+  depends_on "kde-mac/kde/kf5-kio"
+  depends_on "kde-mac/kde/kf5-knotifications"
+  depends_on "kde-mac/kde/kf5-ktextwidgets"
+  depends_on "kde-mac/kde/kf5-kwindowsystem"
+  depends_on "kde-mac/kde/kf5-kcoreaddons" => :optional
 
   def install
     args = std_cmake_args
@@ -24,12 +25,10 @@ class Kdialog < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # # Extract Qt plugin path
     # qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     # system "/usr/libexec/PlistBuddy",
@@ -50,6 +49,6 @@ class Kdialog < Formula
   end
 
   test do
-    assert `"#{bin}/kdialog.app/Contents/MacOS/kdialog" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/kdialog.app/Contents/MacOS/kdialog --help")
   end
 end

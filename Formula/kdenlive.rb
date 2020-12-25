@@ -3,25 +3,26 @@ class Kdenlive < Formula
   homepage "https://www.kdenlive.org/"
   url "https://download.kde.org/stable/release-service/20.12.0/src/kdenlive-20.12.0.tar.xz"
   sha256 "c2be4227edc29e9d835dbe21ee3ca2986a44cd494dffc8b353a526510fb40d74"
+  revision 1
   head "https://invent.kde.org/multimedia/kdenlive.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
   depends_on "shared-mime-info" => :build
 
   depends_on "hicolor-icon-theme"
-  depends_on "KDE-mac/kde/kf5-breeze-icons"
-  depends_on "KDE-mac/kde/kf5-kdeclarative"
-  depends_on "KDE-mac/kde/kf5-kfilemetadata"
-  depends_on "KDE-mac/kde/kf5-knewstuff"
-  depends_on "KDE-mac/kde/kf5-knotifyconfig"
+  depends_on "kde-mac/kde/kf5-breeze-icons"
+  depends_on "kde-mac/kde/kf5-kdeclarative"
+  depends_on "kde-mac/kde/kf5-kfilemetadata"
+  depends_on "kde-mac/kde/kf5-knewstuff"
+  depends_on "kde-mac/kde/kf5-knotifyconfig"
   depends_on "mlt"
   depends_on "cdrtools" => :optional
   depends_on "dvdauthor" => :optional
   depends_on "ffmpeg" => :optional
-  depends_on "KDE-mac/kde/qt-webkit" => :optional
+  depends_on "kde-mac/kde/qt-webkit" => :optional
   depends_on "libdv" => :optional
 
   patch :DATA
@@ -36,12 +37,10 @@ class Kdenlive < Formula
     args << "-DQt5WebKitWidgets_DIR=" + Formula["qt-webkit"].opt_prefix + "/lib/cmake/Qt5WebKitWidgets"
     args << "-DUPDATE_MIME_DATABASE_EXECUTABLE=OFF"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",
@@ -73,7 +72,7 @@ class Kdenlive < Formula
   end
 
   test do
-    assert `"#{bin}/kdenlive.app/Contents/MacOS/kdenlive" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/kdenlive.app/Contents/MacOS/kdenlive --help")
   end
 end
 

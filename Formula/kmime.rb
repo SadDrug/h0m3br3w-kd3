@@ -3,6 +3,7 @@ class Kmime < Formula
   homepage "https://community.kde.org/KDE_PIM"
   url "https://download.kde.org/stable/release-service/20.12.0/src/kmime-20.12.0.tar.xz"
   sha256 "03375fd4963ad87c675b091c82e4d4ecfd5b17ed513964f7567a38e6b33caf64"
+  revision 1
   head "https://invent.kde.org/pim/kmime.git"
 
   depends_on "cmake" => [:build, :test]
@@ -11,7 +12,7 @@ class Kmime < Formula
   depends_on "ninja" => :build
 
   depends_on "kde-ki18n"
-  depends_on "KDE-mac/kde/kf5-kcodecs"
+  depends_on "kde-mac/kde/kf5-kcodecs"
 
   def install
     args = std_cmake_args
@@ -20,12 +21,10 @@ class Kmime < Formula
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   test do

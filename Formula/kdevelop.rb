@@ -3,34 +3,35 @@ class Kdevelop < Formula
   homepage "https://kdevelop.org"
   url "https://download.kde.org/stable/kdevelop/5.6.0/src/kdevelop-5.6.0.tar.xz"
   sha256 "38adc7d4c4cf2f0fb4191650001e979b5e1b5a3476db28737020baf2fb56f532"
+  revision 1
   head "https://invent.kde.org/kdevelop/kdevelop.git"
 
   depends_on "boost" => :build
   depends_on "cvs" => :build
   depends_on "gdb" => :build
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kdevelop-pg-qt" => :build
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
+  depends_on "kde-mac/kde/kdevelop-pg-qt" => :build
   depends_on "ninja" => :build
   depends_on "shared-mime-info" => :build
 
   depends_on "cmake"
-  depends_on "KDE-mac/kde/grantlee"
-  depends_on "KDE-mac/kde/kf5-breeze-icons"
-  depends_on "KDE-mac/kde/kf5-kcmutils"
-  depends_on "KDE-mac/kde/kf5-kitemmodels"
-  depends_on "KDE-mac/kde/kf5-knewstuff"
-  depends_on "KDE-mac/kde/kf5-knotifyconfig"
-  depends_on "KDE-mac/kde/kf5-ktexteditor"
-  depends_on "KDE-mac/kde/ksysguard"
-  depends_on "KDE-mac/kde/libkomparediff2"
+  depends_on "kde-mac/kde/grantlee"
+  depends_on "kde-mac/kde/kf5-breeze-icons"
+  depends_on "kde-mac/kde/kf5-kcmutils"
+  depends_on "kde-mac/kde/kf5-kitemmodels"
+  depends_on "kde-mac/kde/kf5-knewstuff"
+  depends_on "kde-mac/kde/kf5-knotifyconfig"
+  depends_on "kde-mac/kde/kf5-ktexteditor"
+  depends_on "kde-mac/kde/ksysguard"
+  depends_on "kde-mac/kde/libkomparediff2"
   depends_on "kde-threadweaver"
   depends_on "llvm"
 
   depends_on "cppcheck" => :optional
   depends_on "gdb" => :optional
-  depends_on "KDE-mac/kde/kf5-plasma-framework" => :optional
-  depends_on "KDE-mac/kde/konsole" => :optional
+  depends_on "kde-mac/kde/kf5-plasma-framework" => :optional
+  depends_on "kde-mac/kde/konsole" => :optional
   depends_on "subversion" => :optional
 
   conflicts_with "KDE-mac/kde/kdevplatform", because: "now included in Kdevelop"
@@ -45,12 +46,10 @@ class Kdevelop < Formula
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DUPDATE_MIME_DATABASE_EXECUTABLE=OFF"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     chmod "+w", "#{bin}/kdevelop.app/Contents/Info.plist"
     system "/usr/libexec/PlistBuddy",
@@ -73,7 +72,7 @@ class Kdevelop < Formula
   end
 
   test do
-    assert `"#{bin}/kdevelop.app/Contents/MacOS/kdevelop" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/kdevelop.app/Contents/MacOS/kdevelop --help")
   end
 end
 

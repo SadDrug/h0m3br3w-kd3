@@ -40,12 +40,10 @@ class Kf5Kapidox < Formula
     args = cmake_args
     args << "-DPYTHON_EXECUTABLE=" + Formula["python"].bin + "/python3"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
 
     xy = Language::Python.major_minor_version "python3"
     ENV.prepend_create_path "PYTHONPATH", libexec/"vendor/lib/python#{xy}/site-packages"

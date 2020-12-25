@@ -3,13 +3,13 @@ class Poxml < Formula
   homepage "https://www.kde.org/applications/development/"
   url "https://download.kde.org/stable/release-service/20.12.0/src/poxml-20.12.0.tar.xz"
   sha256 "799af7bf24e336023f5f89e22593931a1f5d95fbcec3f65d39ab7de75d3e2e1a"
+  revision 1
   head "https://invent.kde.org/sdk/poxml.git"
 
   depends_on "cmake" => [:build, :test]
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
-
   depends_on "gettext"
-  depends_on "KDE-mac/kde/kf5-kdoctools"
   depends_on "qt"
 
   patch :DATA
@@ -20,12 +20,10 @@ class Poxml < Formula
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   test do

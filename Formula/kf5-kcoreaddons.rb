@@ -23,12 +23,10 @@ class Kf5Kcoreaddons < Formula
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
     args << "-DUPDATE_MIME_DATABASE_EXECUTABLE=OFF"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   def post_install

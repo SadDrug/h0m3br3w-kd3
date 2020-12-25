@@ -9,18 +9,18 @@ class Kf5Kio < Formula
   depends_on "doxygen" => :build
   depends_on "graphviz" => :build
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
 
   depends_on "desktop-file-utils"
-  depends_on "KDE-mac/kde/kf5-kbookmarks"
-  depends_on "KDE-mac/kde/kf5-kjobwidgets"
-  depends_on "KDE-mac/kde/kf5-kwallet"
-  depends_on "KDE-mac/kde/kf5-solid"
+  depends_on "kde-mac/kde/kf5-kbookmarks"
+  depends_on "kde-mac/kde/kf5-kjobwidgets"
+  depends_on "kde-mac/kde/kf5-kwallet"
+  depends_on "kde-mac/kde/kf5-solid"
   depends_on "libxslt"
   depends_on "qt"
 
-  depends_on "KDE-mac/kde/kio-extras" => :optional
+  depends_on "kde-mac/kde/kio-extras" => :optional
 
   def install
     args = std_cmake_args
@@ -30,12 +30,10 @@ class Kf5Kio < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   def caveats

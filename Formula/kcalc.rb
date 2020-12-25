@@ -3,15 +3,16 @@ class Kcalc < Formula
   homepage "https://utils.kde.org/projects/kcalc/"
   url "https://download.kde.org/stable/release-service/20.12.0/src/kcalc-20.12.0.tar.xz"
   sha256 "3c92a39a349225cbe6fa1eeb84ea5a937172d6a216e06e9f63b954118390482b"
+  revision 1
   head "https://invent.kde.org/utilities/kcalc.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "gettext" => :build
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
 
-  depends_on "KDE-mac/kde/kf5-breeze-icons"
-  depends_on "KDE-mac/kde/kf5-kinit"
+  depends_on "kde-mac/kde/kf5-breeze-icons"
+  depends_on "kde-mac/kde/kf5-kinit"
   depends_on "mpfr"
 
   patch :DATA
@@ -23,12 +24,10 @@ class Kcalc < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",
@@ -49,7 +48,7 @@ class Kcalc < Formula
   end
 
   test do
-    assert `"#{bin}/kcalc.app/Contents/MacOS/kcalc" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/kcalc.app/Contents/MacOS/kcalc --help")
   end
 end
 

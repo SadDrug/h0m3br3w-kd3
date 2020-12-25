@@ -8,13 +8,13 @@ class Kf5Kdesignerplugin < Formula
   depends_on "cmake" => [:build, :test]
   depends_on "gettext" => :build
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
 
-  depends_on "KDE-mac/kde/kf5-kio"
-  depends_on "KDE-mac/kde/kf5-kplotting"
+  depends_on "kde-mac/kde/kf5-kio"
+  depends_on "kde-mac/kde/kf5-kplotting"
 
-  depends_on "KDE-mac/kde/kf5-kdewebkit" => :optional
+  depends_on "kde-mac/kde/kf5-kdewebkit" => :optional
 
   def install
     args = std_cmake_args
@@ -23,12 +23,10 @@ class Kf5Kdesignerplugin < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   def caveats

@@ -10,10 +10,10 @@ class Kf5Krunner < Formula
   depends_on "gettext" => :build
   depends_on "graphviz" => :build
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
 
-  depends_on "KDE-mac/kde/kf5-plasma-framework"
+  depends_on "kde-mac/kde/kf5-plasma-framework"
   depends_on "kde-threadweaver"
 
   def install
@@ -24,12 +24,10 @@ class Kf5Krunner < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   test do

@@ -3,26 +3,27 @@ class KioExtras < Formula
   homepage "https://www.kde.org/applications/internet/"
   url "https://download.kde.org/stable/release-service/20.12.0/src/kio-extras-20.12.0.tar.xz"
   sha256 "530a9643009647d6b8e8e799b4018ce5d06a687c918f53af6652dbfa7fe3ab29"
+  revision 1
   head "https://invent.kde.org/network/kio-extras.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "gperf" => :build
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
   depends_on "shared-mime-info" => :build
 
   depends_on "exiv2"
-  depends_on "KDE-mac/kde/kf5-kdnssd"
-  depends_on "KDE-mac/kde/kf5-kio"
-  depends_on "KDE-mac/kde/kf5-kpty"
-  depends_on "KDE-mac/kde/kf5-syntax-highlighting"
+  depends_on "kde-mac/kde/kf5-kdnssd"
+  depends_on "kde-mac/kde/kf5-kio"
+  depends_on "kde-mac/kde/kf5-kpty"
+  depends_on "kde-mac/kde/kf5-syntax-highlighting"
   depends_on "libmtp"
   depends_on "openexr"
   depends_on "openslp"
 
-  depends_on "KDE-mac/kde/kf5-khtml" => :optional
-  depends_on "KDE-mac/kde/kf5-kimageformats" => :optional
+  depends_on "kde-mac/kde/kf5-khtml" => :optional
+  depends_on "kde-mac/kde/kf5-kimageformats" => :optional
 
   conflicts_with "taglib", because: "linking errors"
 
@@ -41,12 +42,10 @@ class KioExtras < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DUPDATE_MIME_DATABASE_EXECUTABLE=OFF"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   def post_install

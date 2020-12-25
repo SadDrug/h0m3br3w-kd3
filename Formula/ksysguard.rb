@@ -3,18 +3,19 @@ class Ksysguard < Formula
   homepage "https://userbase.kde.org/KSysGuard"
   url "https://download.kde.org/stable/plasma/5.20.4/ksysguard-5.20.4.tar.xz"
   sha256 "a5f247b24ce75a28f301446fbeb25abf968e77e0c32cd4be9b574a21d3bbfaf4"
+  revision 1
   head "https://invent.kde.org/plasma/ksysguard.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
-  depends_on "KDE-mac/kde/kf5-plasma-framework" => :build
+  depends_on "kde-kdoctools" => :build
+  depends_on "kde-mac/kde/kf5-plasma-framework" => :build
   depends_on "ninja" => :build
 
   depends_on "hicolor-icon-theme"
-  depends_on "KDE-mac/kde/kf5-kinit"
-  depends_on "KDE-mac/kde/kf5-knewstuff"
-  depends_on "KDE-mac/kde/libksysguard"
+  depends_on "kde-mac/kde/kf5-kinit"
+  depends_on "kde-mac/kde/kf5-knewstuff"
+  depends_on "kde-mac/kde/libksysguard"
 
   patch :DATA
 
@@ -25,12 +26,10 @@ class Ksysguard < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",
@@ -51,7 +50,7 @@ class Ksysguard < Formula
   end
 
   test do
-    assert `"#{bin}/ksysguard.app/Contents/MacOS/ksysguard" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/ksysguard.app/Contents/MacOS/ksysguard --help")
   end
 end
 

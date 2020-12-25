@@ -3,6 +3,7 @@ class Elisa < Formula
   homepage "https://community.kde.org/Elisa"
   url "https://download.kde.org/stable/release-service/20.12.0/src/elisa-20.12.0.tar.xz"
   sha256 "0e1bed3836da289361b9a9616caadf24479e184e6b8918747567b46535058508"
+  revision 1
   head "https://anongit.kde.org/elisa.git"
 
   depends_on "cmake" => [:build, :test]
@@ -11,7 +12,7 @@ class Elisa < Formula
   depends_on "ninja" => :build
 
   depends_on "hicolor-icon-theme"
-  depends_on "KDE-mac/kde/kf5-kcmutils"
+  depends_on "kde-mac/kde/kf5-kcmutils"
 
   def install
     args = std_cmake_args
@@ -21,12 +22,10 @@ class Elisa < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin and QML2 path
     mkdir "getqmlpath" do
       (Pathname.pwd/"main.cpp").write <<~EOS
@@ -71,6 +70,6 @@ class Elisa < Formula
   end
 
   test do
-    assert `"#{bin}/elisa.app/Contents/MacOS/elisa" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/elisa.app/Contents/MacOS/elisa --help")
   end
 end

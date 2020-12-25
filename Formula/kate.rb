@@ -3,23 +3,24 @@ class Kate < Formula
   homepage "https://kate-editor.org"
   url "https://download.kde.org/stable/release-service/20.12.0/src/kate-20.12.0.tar.xz"
   sha256 "69017d7369bbcac7a3e350fc0e02cbcfbf5ce09e89149e765a1cd647f3cb3c0f"
+  revision 1
   head "https://invent.kde.org/utilities/kate.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
-  depends_on "KDE-mac/kde/kf5-plasma-framework" => :build
+  depends_on "kde-kdoctools" => :build
+  depends_on "kde-mac/kde/kf5-plasma-framework" => :build
   depends_on "ninja" => :build
 
   depends_on "hicolor-icon-theme"
-  depends_on "KDE-mac/kde/kf5-breeze-icons"
-  depends_on "KDE-mac/kde/kf5-kactivities"
-  depends_on "KDE-mac/kde/kf5-kitemmodels"
-  depends_on "KDE-mac/kde/kf5-knewstuff"
-  depends_on "KDE-mac/kde/kf5-ktexteditor"
+  depends_on "kde-mac/kde/kf5-breeze-icons"
+  depends_on "kde-mac/kde/kf5-kactivities"
+  depends_on "kde-mac/kde/kf5-kitemmodels"
+  depends_on "kde-mac/kde/kf5-knewstuff"
+  depends_on "kde-mac/kde/kf5-ktexteditor"
   depends_on "kde-threadweaver"
 
-  depends_on "KDE-mac/kde/konsole" => [:optional]
+  depends_on "kde-mac/kde/konsole" => [:optional]
 
   def install
     args = std_cmake_args
@@ -28,12 +29,10 @@ class Kate < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",
@@ -59,7 +58,7 @@ class Kate < Formula
   end
 
   test do
-    assert `"#{bin}/kate.app/Contents/MacOS/kate" --help | grep -- --help`.include?("--help")
-    assert `"#{bin}/kwrite.app/Contents/MacOS/kwrite" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/kate.app/Contents/MacOS/kate --help")
+    assert_match "help", shell_output("#{bin}/kwrite.app/Contents/MacOS/kwrite --help")
   end
 end

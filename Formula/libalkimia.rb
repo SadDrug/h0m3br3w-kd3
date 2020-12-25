@@ -3,6 +3,7 @@ class Libalkimia < Formula
   homepage "https://kmymoney.org"
   url "https://download.kde.org/stable/alkimia/8.0.4/alkimia-8.0.4.tar.xz"
   sha256 "0004a7068dff0aa2cb6f47f70d21c129073be11f2edb21f14512bc4470487d1f"
+  revision 1
   head "https://invent.kde.org/office/alkimia.git"
 
   depends_on "cmake" => [:build, :test]
@@ -11,11 +12,11 @@ class Libalkimia < Formula
 
   depends_on "gettext"
   depends_on "gmp"
-  depends_on "KDE-mac/kde/kf5-kcoreaddons"
+  depends_on "kde-mac/kde/kf5-kcoreaddons"
   depends_on "kde-mac/kde/kf5-kdelibs4support"
   depends_on "kde-mac/kde/kf5-knewstuff"
   depends_on "kde-mac/kde/kf5-plasma-framework"
-  depends_on "KDE-mac/kde/qt-webkit"
+  depends_on "kde-mac/kde/qt-webkit"
 
   def install
     args = std_cmake_args
@@ -26,12 +27,10 @@ class Libalkimia < Formula
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DSHARE_INSTALL_DIR=#{pkgshare}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   test do

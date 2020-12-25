@@ -3,20 +3,21 @@ class Ktorrent < Formula
   homepage "https://kde.org/applications/internet/ktorrent/"
   url "https://download.kde.org/stable/release-service/20.12.0/src/ktorrent-20.12.0.tar.xz"
   sha256 "e4b55c47ceea349e8cc248b74e27ae42c53cd48dc6bfcf416519c7bb5a399749"
+  revision 1
   head "https://invent.kde.org/network/ktorrent.git"
 
   depends_on "boost" => :build
   depends_on "cmake" => [:build, :test]
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
 
-  depends_on "KDE-mac/kde/kf5-breeze-icons"
-  depends_on "KDE-mac/kde/kf5-kcmutils"
-  depends_on "KDE-mac/kde/kf5-kio"
-  depends_on "KDE-mac/kde/kf5-knotifyconfig"
-  depends_on "KDE-mac/kde/kf5-kross"
-  depends_on "KDE-mac/kde/libktorrent"
+  depends_on "kde-mac/kde/kf5-breeze-icons"
+  depends_on "kde-mac/kde/kf5-kcmutils"
+  depends_on "kde-mac/kde/kf5-kio"
+  depends_on "kde-mac/kde/kf5-knotifyconfig"
+  depends_on "kde-mac/kde/kf5-kross"
+  depends_on "kde-mac/kde/libktorrent"
 
   def install
     args = std_cmake_args
@@ -25,12 +26,10 @@ class Ktorrent < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",
@@ -54,7 +53,7 @@ class Ktorrent < Formula
   end
 
   test do
-    assert `"#{bin}/ktorrent.app/Contents/MacOS/ktorrent" --help | grep -- --help`.include?("--help")
-    assert `"#{bin}/ktupnptest.app/Contents/MacOS/ktupnptest" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/ktorrent.app/Contents/MacOS/ktorrent --help")
+    assert_match "help", shell_output("#{bin}/ktupnptest.app/Contents/MacOS/ktupnptest --help")
   end
 end

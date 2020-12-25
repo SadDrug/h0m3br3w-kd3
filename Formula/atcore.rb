@@ -3,7 +3,7 @@ class Atcore < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/atcore/1.0.0/atcore-1.0.0.tar.xz"
   sha256 "ffd12455c9b8db853e455a437d6c6b601e0003c6732bbc6c2828032e004530e2"
-  revision 3
+  revision 4
   head "https://invent.kde.org/libraries/atcore.git"
 
   option "with-gui", "Build atcore-gui (HEAD ONLY)"
@@ -20,15 +20,13 @@ class Atcore < Formula
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DBUILD_GUI=ON" if build.with?("gui")
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
 
-      # move the plugins to real path
-      mv "#{bin}/plugins", "#{bin}/AtCoreTest.app/Contents/MacOS/plugins"
-    end
+    # move the plugins to real path
+    mv "#{bin}/plugins", "#{bin}/AtCoreTest.app/Contents/MacOS/plugins"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

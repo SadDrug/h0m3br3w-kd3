@@ -3,13 +3,14 @@ class Labplot < Formula
   homepage "https://labplot.kde.org/"
   url "https://download.kde.org/stable/labplot/2.8.1/labplot-2.8.1.tar.xz"
   sha256 "726909a8335921c742c4d92f66663ecdb447ddee0d74568c50a22330c79e079a"
+  revision 1
   head "https://invent.kde.org/education/labplot.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "kf5-kdelibs4support" => :build
-  depends_on "kf5-kdesignerplugin" => :build
-  depends_on "kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
+  depends_on "kde-mac/kde/kf5-kdelibs4support" => :build
+  depends_on "kde-mac/kde/kf5-kdesignerplugin" => :build
   depends_on "ninja" => :build
   depends_on "shared-mime-info" => :build
 
@@ -28,12 +29,10 @@ class Labplot < Formula
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DUPDATE_MIME_DATABASE_EXECUTABLE=OFF"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # see https://github.com/KDE-mac/homebrew-kde/pull/242
     ln_sf "#{share}/kxmlgui5/labplot2/labplot2ui.rc", "#{bin}/labplot2.app/Contents/Resources/labplot2ui.rc"
   end
@@ -52,7 +51,7 @@ class Labplot < Formula
   end
 
   test do
-    assert `"#{bin}/labplot.app/Contents/MacOS/labplot" --help | grep -- --help`.include?("--help")
+    assert_match "help", shell_output("#{bin}/labplot.app/Contents/MacOS/labplot --help")
   end
 end
 

@@ -9,8 +9,8 @@ class Kf5Kdewebkit < Formula
   depends_on "kde-extra-cmake-modules" => [:build, :test]
   depends_on "ninja" => :build
 
-  depends_on "KDE-mac/kde/kf5-kparts"
-  depends_on "KDE-mac/kde/qt-webkit"
+  depends_on "kde-mac/kde/kf5-kparts"
+  depends_on "kde-mac/kde/qt-webkit"
 
   def install
     args = std_cmake_args
@@ -20,12 +20,10 @@ class Kf5Kdewebkit < Formula
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
     args << "-DQt5WebKitWidgets_DIR=" + Formula["qt-webkit"].opt_prefix + "/lib/cmake/Qt5WebKitWidgets"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
   end
 
   test do

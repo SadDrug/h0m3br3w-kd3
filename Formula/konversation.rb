@@ -3,20 +3,21 @@ class Konversation < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/release-service/20.12.0/src/konversation-20.12.0.tar.xz"
   sha256 "d933d6b2f3dab4633cf58f5ea7b961cb8a7886d09263f9199fa7228eaadf5e8c"
+  revision 1
   head "https://invent.kde.org/network/konversation.git"
 
   depends_on "cmake" => [:build, :test]
   depends_on "kde-extra-cmake-modules" => [:build, :test]
-  depends_on "KDE-mac/kde/kf5-kdoctools" => :build
+  depends_on "kde-kdoctools" => :build
   depends_on "ninja" => :build
 
   depends_on "hicolor-icon-theme"
-  depends_on "KDE-mac/kde/kf5-breeze-icons"
-  depends_on "KDE-mac/kde/kf5-kemoticons"
-  depends_on "KDE-mac/kde/kf5-kidletime"
-  depends_on "KDE-mac/kde/kf5-kio"
-  depends_on "KDE-mac/kde/kf5-knotifyconfig"
-  depends_on "KDE-mac/kde/kf5-kparts"
+  depends_on "kde-mac/kde/kf5-breeze-icons"
+  depends_on "kde-mac/kde/kf5-kemoticons"
+  depends_on "kde-mac/kde/kf5-kidletime"
+  depends_on "kde-mac/kde/kf5-kio"
+  depends_on "kde-mac/kde/kf5-knotifyconfig"
+  depends_on "kde-mac/kde/kf5-kparts"
   depends_on "qca"
 
   def install
@@ -26,12 +27,10 @@ class Konversation < Formula
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", "-S", ".", "-B", "build", "-G", "Ninja", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install build/"install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",
