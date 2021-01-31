@@ -3,7 +3,7 @@ class Kf5Kjsembed < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/portingAids/kjsembed-5.78.0.tar.xz"
   sha256 "296faa38f8996e8b99a7e83fb67d4b0dda5a4284a77aaec9d41ccc62f1ea1065"
-  revision 1
+  revision 2
   head "https://invent.kde.org/frameworks/kjsembed.git"
 
   depends_on "cmake" => [:build, :test]
@@ -19,17 +19,18 @@ class Kf5Kjsembed < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   test do

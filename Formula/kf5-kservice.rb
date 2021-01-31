@@ -3,7 +3,7 @@ class Kf5Kservice < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/kservice-5.78.0.tar.xz"
   sha256 "2ce68ad220b2bc6975f84d8f231afe1a1b5cf6922a75e0ce9541c61e3c5535a0"
-  revision 1
+  revision 2
   head "https://invent.kde.org/frameworks/kservice.git"
 
   depends_on "bison" => :build
@@ -23,18 +23,19 @@ class Kf5Kservice < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DBUILD_QCH=ON"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   def caveats

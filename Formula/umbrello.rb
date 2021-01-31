@@ -3,7 +3,7 @@ class Umbrello < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/release-service/20.12.1/src/umbrello-20.12.1.tar.xz"
   sha256 "74a787947b670024c8a39fc8fb764fba1e79dfcc2664390b903dd85fb8efdd1d"
-  revision 1
+  revision 2
   head "https://invent.kde.org/sdk/umbrello.git"
 
   depends_on "cmake" => [:build, :test]
@@ -22,6 +22,9 @@ class Umbrello < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DBUILD_UNITTESTS=OFF"
     args << "-DBUILD_KF5=ON"
@@ -31,12 +34,10 @@ class Umbrello < Formula
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DQt5WebKitWidgets_DIR=" + Formula["qt-webkit"].opt_prefix + "/lib/cmake/Qt5WebKitWidgets"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

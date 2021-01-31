@@ -5,6 +5,7 @@ class Kf5Tier2Frameworks < Formula
   url "file:///tmp/empty"
   version "5.78.0"
   sha256 "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  revision 1
 
   depends_on "KDE-mac/kde/kf5-kactivities" => [:build, :test]
   depends_on "KDE-mac/kde/kf5-kauth" => [:build, :test]

@@ -3,7 +3,7 @@ class Kf5Krunner < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/krunner-5.78.0.tar.xz"
   sha256 "755e627292550d56ae77e356eb7bd5991652c196d8499af6fb6da7989e301e02"
-  revision 1
+  revision 2
   head "https://invent.kde.org/frameworks/krunner.git"
 
   depends_on "cmake" => [:build, :test]
@@ -19,18 +19,19 @@ class Kf5Krunner < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DBUILD_QCH=ON"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   test do

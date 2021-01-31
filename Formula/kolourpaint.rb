@@ -3,7 +3,7 @@ class Kolourpaint < Formula
   homepage "https://kde.org/applications/graphics/kolourpaint/"
   url "https://download.kde.org/stable/release-service/20.12.1/src/kolourpaint-20.12.1.tar.xz"
   sha256 "5ee17da9790d931953acedeebc434e11edb2f3e9a8593183913b47985c7e5ca8"
-  revision 1
+  revision 2
   head "https://invent.kde.org/graphics/kolourpaint.git"
 
   depends_on "cmake" => [:build, :test]
@@ -17,17 +17,18 @@ class Kolourpaint < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

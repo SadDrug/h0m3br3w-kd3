@@ -3,7 +3,7 @@ class Okular < Formula
   homepage "https://okular.kde.org"
   url "https://download.kde.org/stable/release-service/20.12.1/src/okular-20.12.1.tar.xz"
   sha256 "2ca17ad0b2a1a0f9f70c7ca4bc1f44a9ed758b0ca6a8e5c9935a467f883df53e"
-  revision 1
+  revision 2
   head "https://invent.kde.org/graphics/okular.git"
 
   depends_on "cmake" => [:build, :test]
@@ -35,17 +35,18 @@ class Okular < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin and QML2 path
     mkdir "getqmlpath" do
       (Pathname.pwd/"main.cpp").write <<~EOS

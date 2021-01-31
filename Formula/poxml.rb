@@ -3,6 +3,7 @@ class Poxml < Formula
   homepage "https://www.kde.org/applications/development/"
   url "https://download.kde.org/stable/release-service/20.12.1/src/poxml-20.12.1.tar.xz"
   sha256 "93562e6b86dd0e75af4b7943227824a461b82bc3246ba19d1a9b49d0e9dab2ea"
+  revision 1
   head "https://invent.kde.org/sdk/poxml.git"
 
   depends_on "cmake" => [:build, :test]
@@ -16,16 +17,17 @@ class Poxml < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   test do

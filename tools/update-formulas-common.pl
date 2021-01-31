@@ -126,7 +126,8 @@ chomp($tmp_dir);
 
 sub update_frameworks {
     for my $package ( keys %frameworks ) {
-        my $upstream_suffix = "-${frameworks_version}.0.tar.xz";
+        my $upstream_suffix = "-${frameworks_version}.0.tar.xz"
+revision 1;
         my $upstream_url
             = "https://download.kde.org/stable/frameworks/${frameworks_version}/";
 
@@ -154,7 +155,8 @@ sub update_applications {
         my $upstream_url
             = "https://download.kde.org/stable/release-service/${applications_version}/src/";
 
-        my $upstream_suffix = "-${applications_version}.tar.xz";
+        my $upstream_suffix = "-${applications_version}.tar.xz"
+revision 1;
 
         my $upstream = $applications{$package};
         if ( $upstream eq '' ) {
@@ -173,7 +175,8 @@ sub update_plasmas {
         my $upstream_url
             = "https://download.kde.org/stable/plasma/${plasma_version}/";
 
-        my $upstream_suffix = "-${plasma_version}.tar.xz";
+        my $upstream_suffix = "-${plasma_version}.tar.xz"
+revision 1;
 
         my $upstream = $plasmas{$package};
         if ( $upstream eq '' ) {

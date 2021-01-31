@@ -3,7 +3,7 @@ class Kf5PlasmaFramework < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/plasma-framework-5.78.0.tar.xz"
   sha256 "46aee1e872728af5ec5c28c604494bbcdf01c32c19f9fe2593b749bbeb698481"
-  revision 1
+  revision 2
   head "https://invent.kde.org/frameworks/plasma-framework.git"
 
   depends_on "cmake" => [:build, :test]
@@ -22,6 +22,9 @@ class Kf5PlasmaFramework < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DBUILD_QCH=ON"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
@@ -29,12 +32,10 @@ class Kf5PlasmaFramework < Formula
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   def caveats

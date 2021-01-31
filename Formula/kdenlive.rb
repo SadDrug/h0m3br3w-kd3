@@ -3,7 +3,7 @@ class Kdenlive < Formula
   homepage "https://www.kdenlive.org/"
   url "https://download.kde.org/stable/release-service/20.12.1/src/kdenlive-20.12.1.tar.xz"
   sha256 "9b6e22ad311c33457e7f7147ad873286945fc6c3b610129856fd01cbb51da458"
-  revision 1
+  revision 2
   head "https://invent.kde.org/multimedia/kdenlive.git"
 
   depends_on "cmake" => [:build, :test]
@@ -29,6 +29,9 @@ class Kdenlive < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DKDE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DKDE_INSTALL_LIBDIR=lib"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
@@ -37,12 +40,10 @@ class Kdenlive < Formula
     args << "-DQt5WebKitWidgets_DIR=" + Formula["qt-webkit"].opt_prefix + "/lib/cmake/Qt5WebKitWidgets"
     args << "-DUPDATE_MIME_DATABASE_EXECUTABLE=OFF"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

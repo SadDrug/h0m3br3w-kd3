@@ -1,9 +1,8 @@
 class QtWebkit < Formula
   desc "Port of WebKit on top of Qt"
   homepage "https://github.com/qtwebkit/qtwebkit"
-  revision 2
-  head "https://code.qt.io/qt/qtwebkit.git",
-   branch: "5.212"
+  revision 3
+  head "https://code.qt.io/qt/qtwebkit.git", branch: "5.212"
 
   depends_on "cmake" => [:build, :test]
   depends_on "fontconfig" => :build
@@ -44,12 +43,10 @@ class QtWebkit < Formula
               "set(CMAKE_MACOSX_RPATH\ ON)",
               ""
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   test do

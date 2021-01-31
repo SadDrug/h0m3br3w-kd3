@@ -3,7 +3,7 @@ class Krusader < Formula
   homepage "https://krusader.org/"
   url "https://download.kde.org/stable/krusader/2.7.2/krusader-2.7.2.tar.xz"
   sha256 "41a39a43b3c42dd1d1ecaea86df30caff6a061fecc1d66f60859b2a3ca976109"
-  revision 2
+  revision 3
   head "https://anongit.kde.org/krusader.git"
 
   depends_on "cmake" => [:build, :test]
@@ -23,17 +23,18 @@ class Krusader < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

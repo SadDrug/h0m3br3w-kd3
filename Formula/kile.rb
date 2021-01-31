@@ -19,13 +19,16 @@ class Kile < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
     mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
+      system "cmake", *args
       system "cmake", "--build", "."
       system "cmake", "--install", "."
       prefix.install "install_manifest.txt"
