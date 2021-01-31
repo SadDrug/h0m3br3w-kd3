@@ -3,6 +3,7 @@ class Analitza < Formula
   homepage "https://edu.kde.org/"
   url "https://download.kde.org/stable/release-service/20.12.1/src/analitza-20.12.1.tar.xz"
   sha256 "6d7e7744fae960e44d6fe88938a223e0f7de2b769e622e9d5bcdfe2bf3c2d8e2"
+  revision 1
   head "https://invent.kde.org/education/analitza.git"
 
   depends_on "cmake" => [:build, :test]
@@ -13,17 +14,18 @@ class Analitza < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DCMAKE_INSTALL_PREFIX=#{prefix}"
     args << "-DCMAKE_INSTALL_LIBDIR=#{lib}"
     args << "-DBUILD_TESTING=OFF"
     args << "-DCMAKE_PREFIX_PATH=" + Formula["qt"].opt_prefix + "/lib/cmake"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   test do

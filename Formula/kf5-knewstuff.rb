@@ -3,6 +3,7 @@ class Kf5Knewstuff < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/knewstuff-5.78.0.tar.xz"
   sha256 "d5b0abd5d4ff67e1f4fb921b710d1251569bfc2e19788d9ce7843b498f9a61b9"
+  revision 1
   head "https://invent.kde.org/frameworks/knewstuff.git"
 
   depends_on "cmake" => [:build, :test]
@@ -17,6 +18,9 @@ class Kf5Knewstuff < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DBUILD_QCH=ON"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
@@ -24,12 +28,10 @@ class Kf5Knewstuff < Formula
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   def caveats
@@ -49,6 +51,9 @@ class Kf5Knewstuff < Formula
     EOS
 
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-Wno-dev"
     args << "-DQt5Widgets_DIR=#{Formula["qt"].opt_prefix/"lib/cmake/Qt5Widgets"}"
     args << "-DQt5Xml_DIR=#{Formula["qt"].opt_prefix/"lib/cmake/Qt5Xml"}"

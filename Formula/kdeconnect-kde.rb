@@ -3,6 +3,7 @@ class KdeconnectKde < Formula
   homepage "https://community.kde.org/KDEConnect"
   url "https://download.kde.org/stable/release-service/20.12.1/src/kdeconnect-kde-20.12.1.tar.xz"
   sha256 "fc15b7dba854b5ccc0fbaf1f7accb2c60ef89f311925c89e0c76c5e653182160"
+  revision 1
   head "https://github.com/KDE/kdeconnect-kde.git"
 
   depends_on "cmake" => [:build, :test]
@@ -27,15 +28,16 @@ class KdeconnectKde < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   test do

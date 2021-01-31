@@ -3,7 +3,7 @@ class Kcalc < Formula
   homepage "https://utils.kde.org/projects/kcalc/"
   url "https://download.kde.org/stable/release-service/20.12.1/src/kcalc-20.12.1.tar.xz"
   sha256 "bca173af793573b52abf0a40474c99efe7ecc74f4bb3a71d7b9de009a689a9dc"
-  revision 1
+  revision 2
   head "https://invent.kde.org/utilities/kcalc.git"
 
   depends_on "cmake" => [:build, :test]
@@ -19,17 +19,18 @@ class Kcalc < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

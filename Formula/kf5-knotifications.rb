@@ -3,6 +3,7 @@ class Kf5Knotifications < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/knotifications-5.78.0.tar.xz"
   sha256 "397fc21bbbaf235fd092f3bde731d2c0f1736ed4595e4a4cfa4b1e4328ee2339"
+  revision 1
   head "https://invent.kde.org/frameworks/knotifications.git"
 
   depends_on "cmake" => [:build, :test]
@@ -20,6 +21,9 @@ class Kf5Knotifications < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DBUILD_QCH=ON"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
@@ -29,12 +33,10 @@ class Kf5Knotifications < Formula
     args << "-DCMAKE_C_FLAGS_RELEASE=-DNDEBUG -DQT_DISABLE_DEPRECATED_BEFORE=0x050b00"
     args << "-DCMAKE_CXX_FLAGS_RELEASE=-DNDEBUG -DQT_DISABLE_DEPRECATED_BEFORE=0x050b00"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   def caveats

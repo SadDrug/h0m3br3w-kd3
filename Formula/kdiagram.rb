@@ -3,6 +3,7 @@ class Kdiagram < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/kdiagram/2.7.0/kdiagram-2.7.0.tar.xz"
   sha256 "63a2eabfa1554ceb1d686d5f17ed6308139b6d9155aaf224e0309585b070fbdd"
+  revision 1
   head "https://invent.kde.org/graphics/kdiagram.git"
 
   depends_on "cmake" => [:build, :test]
@@ -13,16 +14,17 @@ class Kdiagram < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   test do

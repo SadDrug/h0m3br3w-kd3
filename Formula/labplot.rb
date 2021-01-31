@@ -3,6 +3,7 @@ class Labplot < Formula
   homepage "https://labplot.kde.org/"
   url "https://download.kde.org/stable/labplot/2.8.1/labplot-2.8.1.tar.xz"
   sha256 "726909a8335921c742c4d92f66663ecdb447ddee0d74568c50a22330c79e079a"
+  revision 1
   head "https://invent.kde.org/education/labplot.git"
 
   depends_on "cmake" => [:build, :test]
@@ -25,15 +26,16 @@ class Labplot < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DUPDATE_MIME_DATABASE_EXECUTABLE=OFF"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # see https://github.com/KDE-mac/homebrew-kde/pull/242
     ln_sf "#{share}/kxmlgui5/labplot2/labplot2ui.rc", "#{bin}/labplot2.app/Contents/Resources/labplot2ui.rc"
   end

@@ -3,7 +3,7 @@ class Okteta < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/okteta/0.26.4/src/okteta-0.26.4.tar.xz"
   sha256 "ef22b096c4d8a682b5467ee7d8e9e05ede44cde116daef804312745c4bfd0f03"
-  revision 1
+  revision 2
   head "https://invent.kde.org/utilities/okteta.git"
 
   depends_on "cmake" => [:build, :test]
@@ -21,18 +21,19 @@ class Okteta < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

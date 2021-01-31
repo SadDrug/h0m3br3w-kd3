@@ -3,7 +3,7 @@ class Ktorrent < Formula
   homepage "https://kde.org/applications/internet/ktorrent/"
   url "https://download.kde.org/stable/release-service/20.12.1/src/ktorrent-20.12.1.tar.xz"
   sha256 "8c5f52d9b4597c117c0ed189c2ada3b9716bc0d5ceb53fde66f6a009bee68354"
-  revision 1
+  revision 2
   head "https://invent.kde.org/network/ktorrent.git"
 
   depends_on "boost" => :build
@@ -21,17 +21,18 @@ class Ktorrent < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",
