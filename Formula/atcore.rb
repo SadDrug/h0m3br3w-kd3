@@ -3,7 +3,7 @@ class Atcore < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/atcore/1.0.0/atcore-1.0.0.tar.xz"
   sha256 "ffd12455c9b8db853e455a437d6c6b601e0003c6732bbc6c2828032e004530e2"
-  revision 3
+  revision 4
   head "https://invent.kde.org/libraries/atcore.git"
 
   option "with-gui", "Build atcore-gui (HEAD ONLY)"
@@ -15,13 +15,16 @@ class Atcore < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DBUILD_GUI=ON" if build.with?("gui")
 
     mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
+      system "cmake", *args
       system "ninja"
       system "ninja", "install"
       prefix.install "install_manifest.txt"

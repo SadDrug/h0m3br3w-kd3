@@ -3,7 +3,7 @@ class Kdiff3 < Formula
   homepage "https://kde.org/applications/en/development/org.kde.kdiff3"
   url "https://download.kde.org/stable/kdiff3/kdiff3-1.8.4.tar.xz"
   sha256 "76e18e097a078c1a440a32562734391d71d12446fcd3b2afeece87c136f43bb8"
-  revision 1
+  revision 2
   head "https://invent.kde.org/sdk/kdiff3.git"
 
   depends_on "cmake" => :build
@@ -20,13 +20,16 @@ class Kdiff3 < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{prefix}"
     args << "-DCMAKE_INSTALL_MANDIR=#{man}"
     args << "-DMACOSX_BUNDLE_ICON_FILE=kdiff3.icns"
 
     mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
+      system "cmake", *args
       system "ninja"
       system "ninja", "install"
 

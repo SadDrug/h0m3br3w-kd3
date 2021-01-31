@@ -3,6 +3,7 @@ class Kf5Kguiaddons < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/kguiaddons-5.78.0.tar.xz"
   sha256 "ad09ed2db12a8740c5bc2d0b1e45b4a4f5c05835b995d2aa5492c11561bc77d0"
+  revision 1
   head "https://invent.kde.org/frameworks/kguiaddons.git"
 
   depends_on "cmake" => [:build, :test]
@@ -15,6 +16,9 @@ class Kf5Kguiaddons < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DBUILD_QCH=ON"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
@@ -22,12 +26,10 @@ class Kf5Kguiaddons < Formula
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
     args << "-DWITH_WAYLAND=OFF"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   test do

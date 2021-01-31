@@ -5,6 +5,7 @@ class Kf5Tier4Frameworks < Formula
   url "file:///tmp/empty"
   version "5.78.0"
   sha256 "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  revision 1
 
   depends_on "KDE-mac/kde/kf5-frameworkintegration" => [:build, :test]
   depends_on "KDE-mac/kde/kf5-tier3-frameworks" => [:build, :test]

@@ -3,7 +3,7 @@ class Kf5Kded < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/kded-5.78.0.tar.xz"
   sha256 "35156cac1df945e7420351b8a361567f20f21af78fef053fa51d8a0ebac2bd52"
-  revision 1
+  revision 2
   head "https://invent.kde.org/frameworks/kded.git"
 
   depends_on "cmake" => [:build, :test]
@@ -16,17 +16,18 @@ class Kf5Kded < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   def caveats

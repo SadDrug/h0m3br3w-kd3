@@ -3,7 +3,7 @@ class Kate < Formula
   homepage "https://kate-editor.org"
   url "https://download.kde.org/stable/release-service/20.12.1/src/kate-20.12.1.tar.xz"
   sha256 "739bbb0378b73245465b59ae961e325d3224e251ae8b97d30c2daceec622a28e"
-  revision 1
+  revision 2
   head "https://invent.kde.org/utilities/kate.git"
 
   depends_on "cmake" => [:build, :test]
@@ -24,17 +24,18 @@ class Kate < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

@@ -3,7 +3,7 @@ class Kf5Kdelibs4support < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/portingAids/kdelibs4support-5.78.0.tar.xz"
   sha256 "98f914a9f2ad778c3f5dad4f340cb930a13fda968c899aef3812403d20fb94c5"
-  revision 1
+  revision 2
   head "https://invent.kde.org/frameworks/kdelibs4support.git"
 
   depends_on "cmake" => [:build, :test]
@@ -24,18 +24,19 @@ class Kf5Kdelibs4support < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

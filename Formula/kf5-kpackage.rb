@@ -3,7 +3,7 @@ class Kf5Kpackage < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/kpackage-5.78.0.tar.xz"
   sha256 "ec906a1037b91d747a858b77e40e24c279c1af72199cc15dec422a1707741b34"
-  revision 1
+  revision 2
   head "https://invent.kde.org/frameworks/kpackage.git"
 
   depends_on "cmake" => [:build, :test]
@@ -20,18 +20,19 @@ class Kf5Kpackage < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DBUILD_QCH=ON"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   def caveats

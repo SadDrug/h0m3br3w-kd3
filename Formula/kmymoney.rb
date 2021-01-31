@@ -3,6 +3,7 @@ class Kmymoney < Formula
   homepage "https://kmymoney.org"
   url "https://download.kde.org/stable/kmymoney/5.1.0/src/kmymoney-5.1.0.tar.xz"
   sha256 "2db968f1d112b913fde3e0e5160215ca689ea2ca5ce3f6f00a4ef97330f71351"
+  revision 1
   head "https://invent.kde.org/office/kmymoney.git"
 
   depends_on "cmake" => [:build, :test]
@@ -32,17 +33,18 @@ class Kmymoney < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

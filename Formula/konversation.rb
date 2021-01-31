@@ -3,7 +3,7 @@ class Konversation < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/release-service/20.12.1/src/konversation-20.12.1.tar.xz"
   sha256 "441e8924763893e5933309dd90525ed8fc37e6e7dc2eda2b1e6cab7176f4d7f4"
-  revision 1
+  revision 2
   head "https://invent.kde.org/network/konversation.git"
 
   depends_on "cmake" => [:build, :test]
@@ -22,17 +22,18 @@ class Konversation < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin path
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     system "/usr/libexec/PlistBuddy",

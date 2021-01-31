@@ -3,7 +3,7 @@ class KioExtras < Formula
   homepage "https://www.kde.org/applications/internet/"
   url "https://download.kde.org/stable/release-service/20.12.1/src/kio-extras-20.12.1.tar.xz"
   sha256 "eff93820cf427adffa6019ae566a7eeb788b5e6f4a15395c764170e2bf3ca0fa"
-  revision 1
+  revision 2
   head "https://invent.kde.org/network/kio-extras.git"
 
   depends_on "cmake" => [:build, :test]
@@ -37,17 +37,18 @@ class KioExtras < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DUPDATE_MIME_DATABASE_EXECUTABLE=OFF"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   def post_install

@@ -3,7 +3,7 @@ class Kf5Kross < Formula
   homepage "https://api.kde.org/frameworks/kross/html"
   url "https://download.kde.org/stable/frameworks/5.78/portingAids/kross-5.78.0.tar.xz"
   sha256 "6121ce648605b8de960889a6c48a5fda967b3f52e38c626c5ac6f5f2e766d41f"
-  revision 1
+  revision 2
   head "https://invent.kde.org/frameworks/kross.git"
 
   depends_on "cmake" => [:build, :test]
@@ -18,17 +18,18 @@ class Kf5Kross < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   test do

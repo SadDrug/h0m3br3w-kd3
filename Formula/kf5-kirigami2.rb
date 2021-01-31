@@ -3,6 +3,7 @@ class Kf5Kirigami2 < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/kirigami2-5.78.0.tar.xz"
   sha256 "5e4e2be2a03d4ff4aae99c9451c2fc81015f9e5c22cc679e188346e83be3c718"
+  revision 1
   head "https://invent.kde.org/frameworks/kirigami.git"
 
   depends_on "cmake" => [:build, :test]
@@ -16,18 +17,19 @@ class Kf5Kirigami2 < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DBUILD_QCH=ON"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   def caveats

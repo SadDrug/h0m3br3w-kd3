@@ -3,6 +3,7 @@ class Elisa < Formula
   homepage "https://community.kde.org/Elisa"
   url "https://download.kde.org/stable/release-service/20.12.1/src/elisa-20.12.1.tar.xz"
   sha256 "3e360105dd08296bee61d2d92adfc7311b46bdb813be5842f4f2fbd64fecafd2"
+  revision 1
   head "https://anongit.kde.org/elisa.git"
 
   depends_on "cmake" => [:build, :test]
@@ -15,18 +16,19 @@ class Elisa < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     # Extract Qt plugin and QML2 path
     mkdir "getqmlpath" do
       (Pathname.pwd/"main.cpp").write <<~EOS

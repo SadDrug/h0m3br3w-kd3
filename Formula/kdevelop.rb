@@ -3,7 +3,7 @@ class Kdevelop < Formula
   homepage "https://kdevelop.org"
   url "https://download.kde.org/stable/kdevelop/5.6.0/src/kdevelop-5.6.0.tar.xz"
   sha256 "38adc7d4c4cf2f0fb4191650001e979b5e1b5a3476db28737020baf2fb56f532"
-  revision 1
+  revision 2
   head "https://invent.kde.org/kdevelop/kdevelop.git"
 
   depends_on "boost" => :build
@@ -40,18 +40,19 @@ class Kdevelop < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DCMAKE_INSTALL_BUNDLEDIR=#{bin}"
     args << "-DUPDATE_MIME_DATABASE_EXECUTABLE=OFF"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
     qtpp = `#{Formula["qt"].bin}/qtpaths --plugin-dir`.chomp
     chmod "+w", "#{bin}/kdevelop.app/Contents/Info.plist"
     system "/usr/libexec/PlistBuddy",

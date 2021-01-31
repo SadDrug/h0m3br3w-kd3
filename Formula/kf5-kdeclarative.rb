@@ -3,6 +3,7 @@ class Kf5Kdeclarative < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/kdeclarative-5.78.0.tar.xz"
   sha256 "4759319fd1569d64f53d299f67c8564e75f687376f2774dadc7c53e45d2f4797"
+  revision 1
   head "https://invent.kde.org/frameworks/kdeclarative.git"
 
   depends_on "cmake" => [:build, :test]
@@ -19,18 +20,19 @@ class Kf5Kdeclarative < Formula
 
   def install
     args = std_cmake_args
+    args << "-G" << "Ninja"
+    args << "-B" << "build"
+    args << "-S" << "."
     args << "-DBUILD_TESTING=OFF"
     args << "-DBUILD_QCH=OFF"
     args << "-DKDE_INSTALL_QMLDIR=lib/qt5/qml"
     args << "-DKDE_INSTALL_PLUGINDIR=lib/qt5/plugins"
     args << "-DKDE_INSTALL_QTPLUGINDIR=lib/qt5/plugins"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
   end
 
   test do

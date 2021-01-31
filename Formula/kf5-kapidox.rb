@@ -3,6 +3,7 @@ class Kf5Kapidox < Formula
   homepage "https://www.kde.org"
   url "https://download.kde.org/stable/frameworks/5.78/kapidox-5.78.0.tar.xz"
   sha256 "774f1b8fafb161c7602ab45774cf6024360d9cc840d99adc436feb6cc75011b5"
+  revision 1
   head "https://invent.kde.org/frameworks/kapidox.git"
 
   depends_on "cmake" => [:build, :test]
@@ -40,12 +41,10 @@ class Kf5Kapidox < Formula
     args = cmake_args
     args << "-DPYTHON_EXECUTABLE=" + Formula["python"].bin + "/python3"
 
-    mkdir "build" do
-      system "cmake", "-G", "Ninja", "..", *args
-      system "ninja"
-      system "ninja", "install"
-      prefix.install "install_manifest.txt"
-    end
+    system "cmake", *args
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
+    prefix.install "install_manifest.txt"
 
     xy = Language::Python.major_minor_version "python3"
     ENV.prepend_create_path "PYTHONPATH", libexec/"vendor/lib/python#{xy}/site-packages"
