@@ -26,11 +26,11 @@ echo 'tap "kde-mac/kde", "https://invent.kde.org/packaging/homebrew-kde.git"' > 
 
 for candidate_formula in `cat "${install_order}"`; do
     formula_path="${formuladir}/${candidate_formula}.rb"
-    if grep -E -L 'url "http|url "file' "${formula_path}" > /dev/null; then
-		echo "brew \"kde-mac/kde/${candidate_formula}\"" >> "${bundle}"
+    if grep -q -E -l 'url "http|url "file' "${formula_path}"; then
+      echo "brew \"kde-mac/kde/${candidate_formula}\"" >> "${bundle}"
     else
-		echo "brew \"kde-mac/kde/${candidate_formula}\", args: [\"HEAD\"]" >> "${bundle}"
-	fi
+      echo "brew \"kde-mac/kde/${candidate_formula}\", args: [\"HEAD\"]" >> "${bundle}"
+    fi
 done
 
 brew bundle --verbose --file "${bundle}"
