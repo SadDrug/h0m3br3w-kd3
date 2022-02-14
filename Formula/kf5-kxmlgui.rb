@@ -3,8 +3,8 @@ require_relative "../lib/cmake"
 class Kf5Kxmlgui < Formula
   desc "User configurable main windows"
   homepage "https://api.kde.org/frameworks/kxmlgui/html/index.html"
-  url "https://download.kde.org/stable/frameworks/5.90/kxmlgui-5.90.0.tar.xz"
-  sha256 "4f7bc9b305b49a304379d82037dcfe63ba89e6a4911cd4ac3c831dd3330f1be1"
+  url "https://download.kde.org/stable/frameworks/5.91/kxmlgui-5.91.0.tar.xz"
+  sha256 "2f68b187570e22c7037fdbcff83ebaad8b5c77fe1bec166c059da6d475149ce3"
   head "https://invent.kde.org/frameworks/kxmlgui.git", branch: "master"
 
   depends_on "cmake" => [:build, :test]

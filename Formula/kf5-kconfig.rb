@@ -3,8 +3,8 @@ require_relative "../lib/cmake"
 class Kf5Kconfig < Formula
   desc "Persistent platform-independent application settings"
   homepage "https://api.kde.org/frameworks/kconfig/html/index.html"
-  url "https://download.kde.org/stable/frameworks/5.90/kconfig-5.90.0.tar.xz"
-  sha256 "369bf21d3d7a894575728b0061875e4122de13935c0740733e0bc2df9b1f1a7b"
+  url "https://download.kde.org/stable/frameworks/5.91/kconfig-5.91.0.tar.xz"
+  sha256 "a63c3feadc7b6b94d8e06ead5430289742f62da59dfa4f0ceaaf237523b6ad2b"
   head "https://invent.kde.org/frameworks/kconfig.git", branch: "master"
 
   depends_on "cmake" => [:build, :test]

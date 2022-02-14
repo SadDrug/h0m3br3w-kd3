@@ -3,8 +3,8 @@ require_relative "../lib/cmake"
 class Kf5Ktexteditor < Formula
   desc "Advanced embeddable text editor"
   homepage "https://api.kde.org/frameworks/ktexteditor/html/index.html"
-  url "https://download.kde.org/stable/frameworks/5.90/ktexteditor-5.90.0.tar.xz"
-  sha256 "56088115827ae406dcd383e3c3fdf408950f351887259e41965fe4b7929f2dbc"
+  url "https://download.kde.org/stable/frameworks/5.91/ktexteditor-5.91.0.tar.xz"
+  sha256 "f532a1e0621d8a257387758fa616c43729dc2811c22894c656ddefe2c3367fae"
   head "https://invent.kde.org/frameworks/ktexteditor.git", branch: "master"
 
   depends_on "cmake" => [:build, :test]

@@ -3,8 +3,8 @@ require_relative "../lib/cmake"
 class Kf5SyntaxHighlighting < Formula
   desc "Syntax highlighting engine for structured text and code"
   homepage "https://api.kde.org/frameworks/syntax-highlighting/html/index.html"
-  url "https://download.kde.org/stable/frameworks/5.90/syntax-highlighting-5.90.0.tar.xz"
-  sha256 "bf483e79c731a88ef642c9551ee092c4201d926af5b172bc11b1acde5c9baca6"
+  url "https://download.kde.org/stable/frameworks/5.91/syntax-highlighting-5.91.0.tar.xz"
+  sha256 "370a45b274db90e8d2d34d61d3f665a3f1f9f552d4503ce5805a47f445c4f93a"
   head "https://invent.kde.org/frameworks/syntax-highlighting.git", branch: "master"
 
   depends_on "cmake" => [:build, :test]

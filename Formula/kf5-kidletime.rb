@@ -3,8 +3,8 @@ require_relative "../lib/cmake"
 class Kf5Kidletime < Formula
   desc "Monitoring user activity"
   homepage "https://api.kde.org/frameworks/kidletime/html/index.html"
-  url "https://download.kde.org/stable/frameworks/5.90/kidletime-5.90.0.tar.xz"
-  sha256 "785f37141e2918a86bef801b4579c7d6c6e8299881da506263346cacc0acfcf7"
+  url "https://download.kde.org/stable/frameworks/5.91/kidletime-5.91.0.tar.xz"
+  sha256 "1b23a2503defae1fca23bb1574439dcc24a2856c3603587c903f8e8b188f158b"
   head "https://invent.kde.org/frameworks/kidletime.git", branch: "master"
 
   depends_on "cmake" => [:build, :test]
