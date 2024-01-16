@@ -3,8 +3,8 @@ require_relative "../lib/cmake"
 class KioExtras < Formula
   desc "Additional components to increase the functionality of KIO"
   homepage "https://www.kde.org/applications/internet/"
-  url "https://download.kde.org/stable/release-service/23.08.2/src/kio-extras-23.08.2.tar.xz"
-  sha256 "2b98c6432587286dbf98eeacf03af3cadea267e60f21f7cf445a0c27e94fcc43"
+  url "https://download.kde.org/stable/release-service/23.08.4/src/kio-extras-23.08.4.tar.xz"
+  sha256 "f68cbc21cd9e9544ee75b337b9c69171ce989fde801854048aa9fc109b48cd61"
   head "https://invent.kde.org/network/kio-extras.git", branch: "master"
 
   depends_on "cmake" => [:build, :test]

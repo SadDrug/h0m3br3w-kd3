@@ -3,8 +3,8 @@ require_relative "../lib/cmake"
 class Poxml < Formula
   desc "Translates DocBook XML files using gettext po files"
   homepage "https://www.kde.org/applications/development/"
-  url "https://download.kde.org/stable/release-service/23.08.2/src/poxml-23.08.2.tar.xz"
-  sha256 "0c95d7876e6f867c051eca357f460cd5cedd58c139b9384fecadfff58685c036"
+  url "https://download.kde.org/stable/release-service/23.08.4/src/poxml-23.08.4.tar.xz"
+  sha256 "19f0007315bdb5468011c353959c2c36a8decb88efb6a7d556b6880bb4253747"
   head "https://invent.kde.org/sdk/poxml.git", branch: "master"
 
   depends_on "cmake" => [:build, :test]
