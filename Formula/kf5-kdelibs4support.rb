@@ -3,8 +3,8 @@ require_relative "../lib/cmake"
 class Kf5Kdelibs4support < Formula
   desc "Porting aid from KDELibs4"
   homepage "https://api.kde.org/frameworks/kdelibs4support/html/index.html"
-  url "https://download.kde.org/stable/frameworks/5.114/portingAids/kdelibs4support-5.114.0.tar.xz"
-  sha256 "ac064213c4982881d47469793795e62520a67056b121e40a674e3a51231c879c"
+  url "https://download.kde.org/stable/frameworks/5.115/portingAids/kdelibs4support-5.115.0.tar.xz"
+  sha256 "72a2fa16c9044fffa7548f349e5e19f16996787673e6bd978fdca260e5512f14"
   head "https://invent.kde.org/frameworks/kdelibs4support.git", branch: "master"
 
   depends_on "cmake" => [:build, :test]

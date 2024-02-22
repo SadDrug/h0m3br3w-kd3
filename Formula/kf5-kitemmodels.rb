@@ -3,8 +3,8 @@ require_relative "../lib/cmake"
 class Kf5Kitemmodels < Formula
   desc "Models for Qt Model/View system"
   homepage "https://api.kde.org/frameworks/kitemmodels/html/index.html"
-  url "https://download.kde.org/stable/frameworks/5.114/kitemmodels-5.114.0.tar.xz"
-  sha256 "d485f966727c750b4d71b7136dec0be4729cd5fe5b0ca7581677e7c55666d5ad"
+  url "https://download.kde.org/stable/frameworks/5.115/kitemmodels-5.115.0.tar.xz"
+  sha256 "fffad18b40bb81cde41968459fcdf354bd3a68f1241bd625cba48ee44b68ef0c"
   head "https://invent.kde.org/frameworks/kitemmodels.git", branch: "master"
 
   depends_on "cmake" => [:build, :test]

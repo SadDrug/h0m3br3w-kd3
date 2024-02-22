@@ -3,8 +3,8 @@ require_relative "../lib/cmake"
 class Kf5Kio < Formula
   desc "Resource and network access abstraction"
   homepage "https://api.kde.org/frameworks/kio/html/index.html"
-  url "https://download.kde.org/stable/frameworks/5.114/kio-5.114.0.tar.xz"
-  sha256 "5fac59827b30ff6c07a564f78498ffaccd7c62a66ef77d004e86bb0dddea955b"
+  url "https://download.kde.org/stable/frameworks/5.115/kio-5.115.0.tar.xz"
+  sha256 "0f53387b5a883fcef3db10b7c1062485a314d42d9584d9119056e571568ff90b"
   head "https://invent.kde.org/frameworks/kio.git", branch: "master"
 
   depends_on "cmake" => [:build, :test]
